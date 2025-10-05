@@ -1,45 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-export default class WatchForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { name: '', offset: '' }; 
-  }
+export default function WatchForm({ onAdd }) {
+  const [name, setName] = useState('');
+  const [offset, setOffset] = useState('');
 
-  onChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
-  };
-
-  onSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const name = this.state.name.trim();
-    const offset = parseFloat(this.state.offset);
-    if (!name) return alert('Введите название');
-    if (Number.isNaN(offset)) return alert('Введите корректное числовое смещение (например 3 или -5)');
-    this.props.onAdd({ name, offset });
-    this.setState({ name: '', offset: '' });
+    const parsedOffset = parseFloat(offset);
+    if (!name.trim()) return alert('Введите название');
+    if (isNaN(parsedOffset)) return alert('Введите числовое смещение');
+    onAdd({ name, offset: parsedOffset });
+    setName('');
+    setOffset('');
   };
 
-  render() {
-    return (
-      <form onSubmit={this.onSubmit} className="controls">
-        <input
-          name="name"
-          type="text"
-          placeholder="Название (например Moscow)"
-          value={this.state.name}
-          onChange={this.onChange}
-        />
-        <input
-          name="offset"
-          type="number"
-          step="0.5"
-          placeholder="Смещение от GMT (например 3, -5)"
-          value={this.state.offset}
-          onChange={this.onChange}
-        />
-        <button type="submit">Добавить</button>
-      </form>
-    );
-  }
+  return (
+    <form onSubmit={handleSubmit} className="controls">
+      <input type="text" placeholder="Название" value={name} onChange={(e) => setName(e.target.value)} />
+      <input type="number" step="0.5" placeholder="Смещение GMT" value={offset} onChange={(e) => setOffset(e.target.value)} />
+      <button type="submit">Добавить</button>
+    </form>
+  );
 }
